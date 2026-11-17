@@ -1,0 +1,27 @@
+{
+  "name": "pavilion-cricket",
+  "version": "1.0.0",
+  "description": "Original 3D browser cricket game with online multiplayer",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "build": "node scripts/build.mjs",
+    "sim": "node test/sim.mjs",
+    "test": "node test/sim.mjs 60 20 && node test/sim.mjs 40 5 hard && node test/net.mjs",
+    "e2e": "node test/e2e.mjs",
+    "e2e:artifact": "node scripts/build.mjs && node test/artifact-e2e.mjs"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "three": "^0.160.0",
+    "ws": "^8.23.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  },
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  }
+}
