@@ -158,7 +158,9 @@ JSON objects with a `t` field. Ball-scoped messages carry the ball number `b`.
 |-----------|----------|
 | Client → room | `hello`, `cfg`, `start`, `rematch`, `leave` |
 | Client → match | `tossChoice`, `pickBowler`, `field`, `bowl`, `shot`, `run`, `ballDone`, `ready`, `emote` |
-| Host → client | `lobby`, `begin`, `toss`, `snap`, `field`, `delivery`, `shot`, `contact`, `run`, `result`, `void`, `peer`, `emote`, `error` |
+| Host → client | `lobby`, `begin`, `toss`, `snap`, `turn`, `field`, `delivery`, `shot`, `contact`, `run`, `runs`, `result`, `void`, `peer`, `emote`, `error` |
+
+`turn` invites the bowling side to pick a bowler or bowl. The host sends it only after every human has sent `ready` for the previous ball, which keeps the two screens within one ball of each other. `bowl` carries `rem`, the time left before release on the bowler's screen, so the batter's screen can show the same run-up length. `runs` carries a computer batter's run calls for the whole ball at once, and `result` repeats the final run calls so the other screen can replay the running exactly.
 
 `snap` is the whole match in under 2 kB (scorecards as arrays), sent after every ball, so a
 client never has to reconstruct state and a reconnecting client needs only one message.
@@ -194,12 +196,14 @@ canvas.
 
 - `test/sim.mjs` — plays AI v AI matches through the real host and checks rule invariants
   (balls per over, extras, strike, totals add up) and score distributions.
-- `test/e2e.mjs` — headless Chromium: a match vs AI with scripted input; two pages through
-  the WebSocket server; two pages through a mocked artifact room.
+- `test/net.mjs` — full two-human matches with scripted clients over the in-page link, the
+  WebSocket server (including a dropped and rejoined socket), and a simulated artifact room.
+- `test/e2e.mjs` — headless Chromium: a full match against the computer with an in-page
+  autoplayer, then an online match between two pages through the WebSocket server.
 
 ## 11. Deployment
 
 - `npm start` serves the game and the WebSocket endpoint on one port (`PORT`, default 3000).
-- `Dockerfile` and `render.yaml` are included for one-click hosting.
+- A `Dockerfile` is included; the README lists settings for common Node hosts.
 - `npm run build` writes `dist/pavilion-cricket.html` (self-contained, opens from disk,
   vs AI) and `dist/artifact.html` (the same game packaged for a Claude artifact).

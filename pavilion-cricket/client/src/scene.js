@@ -367,7 +367,7 @@ export class Scene3D {
     const wall = new THREE.Mesh(new THREE.LatheGeometry([new THREE.Vector2(81, 0), new THREE.Vector2(81, 2.2), new THREE.Vector2(82, 1.2)], 96), concrete);
     wall.scale.z = sz;
     scene.add(wall);
-    const back = new THREE.Mesh(new THREE.LatheGeometry([new THREE.Vector2(104, 22), new THREE.Vector2(106, 31), new THREE.Vector2(90, 33)], 96), new THREE.MeshLambertMaterial({ color: 0xe9e4d8, side: THREE.DoubleSide }));
+    const back = new THREE.Mesh(new THREE.LatheGeometry([new THREE.Vector2(104, 22), new THREE.Vector2(105.5, 29), new THREE.Vector2(99, 30.5)], 96), new THREE.MeshLambertMaterial({ color: 0xd9d4c8, emissive: 0x6b6a64, side: THREE.DoubleSide }));
     back.scale.z = sz;
     scene.add(back);
     const apron = new THREE.Mesh(new THREE.RingGeometry(0.01, 1, 96, 1).rotateX(-Math.PI / 2), new THREE.MeshLambertMaterial({ color: 0x5c6b4e }));

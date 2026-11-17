@@ -105,6 +105,7 @@ export class Input {
 
   setTouchMode(on) {
     this.touchMode = on;
+    document.body.classList.toggle('touch-mode', on);
     if (this.touchRoot) this.touchRoot.hidden = !on;
   }
 

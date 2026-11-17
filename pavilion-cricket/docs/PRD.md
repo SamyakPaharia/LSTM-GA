@@ -130,12 +130,13 @@ Touch devices get an on-screen stick and context buttons for the same actions.
 | Idle handling | Auto-bowl / auto-pick after a timeout so one player cannot stall |
 | Disconnects | Opponent is told; seat held for 60 s for reconnection; ball in progress is re-bowled; otherwise the match is forfeited |
 | Hosting | (a) Node WebSocket server that anyone can deploy; (b) inside a Claude artifact, peer-to-peer through the artifact's live room with the creator's browser as host |
+| Turn sync | The bowling side is only invited to act once both players have finished watching the previous ball |
 
 ## 9. Non-functional requirements
 
 - Desktop Chrome, Edge, Firefox and Safari (WebGL 1/2). Phone layout works with touch controls.
-- Page weight under 1.5 MB including the 3D library; no images or audio files.
-- 60 fps target at 1080p on integrated graphics; under 150 draw calls in play.
+- Page weight under 1.5 MB including the 3D library; no images or audio files (measured: 632 KB as one file).
+- 60 fps target at 1080p on integrated graphics; under 250 draw calls in play (measured: 185).
 - No personal data collected. Nicknames are held in memory for the life of the room only.
 
 ## 10. Milestones

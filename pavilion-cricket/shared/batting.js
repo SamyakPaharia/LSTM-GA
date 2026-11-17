@@ -8,10 +8,13 @@ import {
 import { makeRng } from './rng.js';
 import { ballAt, velAt, timeAtZ } from './delivery.js';
 
+// window scales the timing windows for a human batter. "bot" is the window used whenever the
+// computer bats; its skill at each difficulty comes from botSigma instead.
 export const LEVELS = {
-  easy: { window: 1.35, botSigma: 0.092, botAcc: 0.5, catchSkill: 0.86, botAgg: -0.08, margin: 0.6 },
-  medium: { window: 1.0, botSigma: 0.072, botAcc: 0.72, catchSkill: 0.95, botAgg: 0, margin: 0.35 },
-  hard: { window: 0.85, botSigma: 0.054, botAcc: 0.9, catchSkill: 1.0, botAgg: 0.06, margin: 0.3 },
+  easy: { window: 1.3, botSigma: 0.092, botAcc: 0.5, catchSkill: 0.86, botAgg: -0.08, margin: 0.6 },
+  medium: { window: 0.86, botSigma: 0.072, botAcc: 0.72, catchSkill: 0.95, botAgg: 0, margin: 0.35 },
+  hard: { window: 0.7, botSigma: 0.054, botAcc: 0.9, catchSkill: 1.0, botAgg: 0.06, margin: 0.3 },
+  bot: { window: 1.0, botSigma: 0.072, botAcc: 0.72, catchSkill: 0.95, botAgg: 0, margin: 0.35 },
 };
 
 export const GUARD_LIMIT = 0.45;
@@ -161,6 +164,8 @@ export function evaluateShot({ d, shot, batter, bowlerSkill = 0.8, level = 'medi
     pMiss *= 0.5;
     pEdge *= 0.4;
   }
+  // A lofted shot can be skied off the top edge, more so when it doesn't suit the ball.
+  const pTop = loft ? (0.03 + (1 - fit) * 0.12 + (1 - tq) * 0.1) * threat : 0;
   const roll = rng();
   if (roll < pMiss) return afterMiss(res, d, off, bodyX, rng, true);
 
@@ -177,6 +182,12 @@ export function evaluateShot({ d, shot, batter, bowlerSkill = 0.8, level = 'medi
     angle = outside ? 2.55 + rng() * 0.5 : -(2.5 + rng() * 0.55);
     speed = ballSpeed * (0.5 + 0.3 * rng());
     elev = (2 + rng() * 14) * DEG;
+  } else if (roll < pMiss + pEdge + pTop) {
+    res.kind = 'edge';
+    res.name = 'top edge';
+    angle = phi + rng.gauss() * 0.5;
+    speed = 11 + 8 * rng();
+    elev = (52 + 18 * rng()) * DEG;
   } else {
     res.kind = 'hit';
     const late = clamp(delta / Wo, -1, 1);

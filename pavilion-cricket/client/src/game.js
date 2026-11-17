@@ -32,7 +32,7 @@ const BAT_CAMS = [
   { pos: [0, 5.2, 23], look: [0, 0.3, -1] },
 ];
 const BOWL_CAMS = [
-  { pos: [0, 3.2, -21.5], look: [0, 0.35, 6] },
+  { pos: [0, 3.9, -22], look: [0, 0.3, 6] },
   { pos: [0, 7, -30], look: [0, 0, 5] },
 ];
 
@@ -275,6 +275,7 @@ export class GameClient {
       if (this.mode === 'toss') {
         this.hud.closeOverlay();
         this.mode = 'wait';
+        this.camCut = true;
         this.send({ t: 'ready', b: 0 });
       }
     }, 2200);
@@ -287,6 +288,7 @@ export class GameClient {
     if (snap.cur >= 0) {
       this.group.visible = true;
       if (snap.cur !== prevCur) {
+        this.camCut = true;
         setKit(this.kits.field, this.bowlingTeam());
         setKit(this.kits.bat, this.battingTeam());
         this.preset = this.preset || 'attacking';
@@ -513,7 +515,7 @@ export class GameClient {
       n.set('batIdle');
     }
     const [u1, u2] = this.umpires;
-    u1.place(-armSide * 0.5, -12.1, 0);
+    u1.place(-armSide * 1.05, -12.4, 0);
     u1.set('umpire');
     u2.place(-off * 26, HALF - 1.22, off > 0 ? PI / 2 : -PI / 2);
     u2.set('umpire');
@@ -745,7 +747,8 @@ export class GameClient {
       if (b.local && b.effort == null) {
         const m = Math.min(1, b.time / b.runT);
         this.hud.meter(true, m, METER.sweetLo, METER.sweetHi);
-        if ((gi && inp.hit('Space')) || m >= 1) {
+        // The press that started the run-up is still "hit" this frame, so ignore it.
+        if ((gi && inp.hit('Space') && b.time > 0.12) || m >= 1) {
           b.effort = m;
           this.sendBowl(b);
           this.hud.meter(true, m, METER.sweetLo, METER.sweetHi, m);
@@ -1013,7 +1016,8 @@ export class GameClient {
       } else if (b.swingInfo) {
         const sv = clamp((b.clock - b.shot.t) / (2 * SWING_TIME), 0, 1);
         s.swing = b.swingInfo;
-        s.set('swing', sv);
+        if (b.clock - b.shot.t > 1.1) s.set('batIdle');
+        else s.set('swing', sv);
         const stride = b.swingInfo.stride * smooth(Math.min(1, sv * 2.2));
         s.z = STANCE_Z + (stride > 0 ? -stride : -stride * 0.8);
         s.x = b.shot.guard != null ? bodyXFor(b.off, b.shot.guard) - b.off * 0.07 : s.x;
@@ -1053,6 +1057,8 @@ export class GameClient {
     for (let j = 0; j < plan.moves.length; j++) {
       const mv = plan.moves[j];
       if (b.moved.has(j) || t < mv.t0) continue;
+      // The bowler finishes his follow-through before he can move.
+      if (mv.i === 1 && b.time < b.relAt + CLIP_T * (1 - BOWL_RELEASE)) continue;
       b.moved.add(j);
       const f = this.fielders[mv.i];
       const dist = Math.hypot(mv.x - f.x, mv.z - f.z);

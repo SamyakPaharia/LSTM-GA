@@ -251,7 +251,7 @@ export class MatchHost {
     const ball = {
       b: ++this.ballSeq, d, seed: this.rng.seed(), striker, bowler, bowlerIdx: I.bowler, freeHit: I.freeHit,
       preset: this.preset, res: null, plan: null, cmds: [], done: false,
-      lv: this.isBot(batSeat) || !this.hasBot ? 'medium' : this.cfg.level,
+      lv: this.isBot(batSeat) ? 'bot' : this.hasBot ? this.cfg.level : 'medium',
       fl: this.isBot(1 - batSeat) ? this.cfg.level : 'medium',
     };
     this.ball = ball;
