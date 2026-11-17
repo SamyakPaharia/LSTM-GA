@@ -84,7 +84,7 @@ npm run build
 
 - `dist/pavilion-cricket.html` — opens straight from disk. Play the computer offline; for
   online play enter the address of a running server.
-- `dist/artifact.html` — the same game packaged for a Claude artifact.
+- `dist/artifact.html` — the same game packaged for a Claude artifact (three.js loads from jsDelivr).
 
 ## Tests
 
@@ -93,6 +93,7 @@ npm test       # 100 computer-v-computer matches through the real host, checking
                # then full two-player matches over the in-page link, the WebSocket server
                # (with a dropped and rejoined socket) and a simulated artifact room
 npm run e2e    # headless Chromium: a match against the computer, then an online match
+npm run e2e:artifact  # the artifact build, two pages playing through a stand-in for the live room
 ```
 
 `node test/sim.mjs 300 20 medium` prints score distributions. Current balance for 20-over
